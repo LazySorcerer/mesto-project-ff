@@ -24,11 +24,10 @@ const cardsContainer = document.querySelector('.places__list');
 const popups = document.querySelectorAll('.popup');
 
 
-const keyHandler = function (evt) {
+export const keyHandler = function (evt) {
   if (evt.key === "Escape") {
     const activePopup = document.querySelector('.popup_is-opened');
     closeModal(activePopup);
-    document.removeEventListener('keydown', keyHandler);
   }
 }
 
@@ -37,12 +36,10 @@ popups.forEach((popup) => {
 
   popup.addEventListener('mousedown', (evt) => {
     if (evt.target.classList.contains('popup')) {
-      closeModal(popup);
-      document.removeEventListener('keydown', keyHandler);
+      closeModal(popup);      
     }
     if (evt.target.classList.contains('popup__close')) {
       closeModal(popup);
-      document.removeEventListener('keydown', keyHandler);
     }
   })
 });
@@ -50,7 +47,6 @@ popups.forEach((popup) => {
 
 profileEditButton.addEventListener('click', function () {
   openModal(popupEditProfile);
-  document.addEventListener('keydown', keyHandler);
 
   profileInfoForm.elements.name.value = profileTitle.textContent;
   profileInfoForm.elements.description.value = profileDescription.textContent;
@@ -58,7 +54,6 @@ profileEditButton.addEventListener('click', function () {
 
 profileAddButton.addEventListener('click', function () {
   openModal(popupNewCard);
-  document.addEventListener('keydown', keyHandler);
 });
 
 
@@ -68,8 +63,7 @@ function handleProfileInfoSubmit(evt) {
   profileTitle.textContent = profileInfoForm.elements.name.value;
   profileDescription.textContent = profileInfoForm.elements.description.value;
 
-  closeModal(evt.target.parentElement.parentElement);
-  document.removeEventListener('keydown', keyHandler);
+  closeModal(popupEditProfile);
 }
 profileInfoForm.addEventListener('submit', handleProfileInfoSubmit);
 
@@ -79,7 +73,6 @@ const openImage = function (evt) {
   const caption = evt.currentTarget.alt;
 
   openModal(popupViewImage);
-  document.addEventListener('keydown', keyHandler);
 
   popupImage.src = link;
   popupImage.alt = caption;
@@ -104,7 +97,6 @@ function handlenewPlaceSubmit(evt) {
   cardsContainer.prepend(createCard(cardName, cardLink, deleteCard, likeCard, openImage));
 
   newPlaceForm.reset();
-  closeModal(evt.target.parentElement.parentElement);
-  document.removeEventListener('keydown', keyHandler);
+  closeModal(popupNewCard);
 }
 newPlaceForm.addEventListener('submit', handlenewPlaceSubmit);
