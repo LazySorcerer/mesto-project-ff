@@ -24,13 +24,6 @@ const cardsContainer = document.querySelector('.places__list');
 const popups = document.querySelectorAll('.popup');
 
 
-export const keyHandler = function (evt) {
-  if (evt.key === "Escape") {
-    const activePopup = document.querySelector('.popup_is-opened');
-    closeModal(activePopup);
-  }
-}
-
 popups.forEach((popup) => {
   popup.classList.add('popup_is-animated');
 

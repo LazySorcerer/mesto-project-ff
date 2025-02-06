@@ -1,5 +1,9 @@
-import { keyHandler } from "../index.js";
-
+const keyHandler = function (evt) {
+  if (evt.key === "Escape") {
+    const activePopup = document.querySelector('.popup_is-opened');
+    closeModal(activePopup);
+  }
+}
 
 export function openModal(popup) {
   popup.classList.add('popup_is-opened');
