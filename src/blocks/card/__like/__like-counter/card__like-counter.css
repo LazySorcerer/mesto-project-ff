@@ -1,0 +1,5 @@
+.card__like-counter {
+  align-self: center;
+  color: rgba(0, 0, 0, 1);
+  font-size: 13px;
+}

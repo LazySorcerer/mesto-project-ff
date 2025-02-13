@@ -1,32 +1,51 @@
-export function createCard(name, link, deleteCard, likeCard, openImage) {
+import { likeSet, likeRemove, sendDeleteCard } from "./api.js";
+
+export function createCard(cardProperties) {
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
   const cardImage = cardElement.querySelector('.card__image');
 
-  cardElement.querySelector('.card__title').textContent = name;
-  cardImage.src = link;
-  cardImage.alt = name;
+  cardElement.querySelector('.card__title').textContent = cardProperties.card.name;
+  cardImage.src = cardProperties.card.link;
+  cardImage.alt = cardProperties.card.name;
 
   const deleteButton = cardElement.querySelector('.card__delete-button');
-  deleteButton.addEventListener('click', deleteCard);
+  if (cardProperties.card.owner._id === cardProperties.userId || cardProperties.userId == undefined ) {    
+    deleteButton.addEventListener('click', (evt) => cardProperties.deleteCard(evt, cardProperties.card._id));
+  } else {
+    deleteButton.style.display = 'none';
+  }
 
   const likeButton = cardElement.querySelector('.card__like-button');
-  likeButton.addEventListener('click', likeCard);
+  if (cardProperties.card.likes.some(item => item._id === cardProperties.userId)) {
+    likeButton.classList.add('card__like-button_is-active');
+  }
+  likeButton.addEventListener('click', (evt) => cardProperties.likeCard(evt, cardProperties.card._id, likeButton, likeCounter));
+  const likeCounter = cardElement.querySelector('.card__like-counter');
+  likeCounter.textContent = cardProperties.card.likes.length;
 
-  cardImage.addEventListener('click', openImage);
+  cardImage.addEventListener('click', cardProperties.openImage);
 
   return cardElement;
 }
 
-export const deleteCard = function (evt) {
+export const deleteCard = function (evt, cardId) {
   const eventTarget = evt.target;
-
   const card = eventTarget.closest('.card');
-  card.remove();
+
+  sendDeleteCard(cardId)
+  .then(res => res.json())
+  .then((result) => {
+    card.remove();
+  });
 }
 
-export const likeCard = function (evt) {
+export const likeCard = function (evt, cardId, likeButton, likeCounter) {
   if (evt.target.classList.contains('card__like-button')) {
-    evt.target.classList.toggle('card__like-button_is-active');
-  }  
+    if (evt.target.classList.contains('card__like-button_is-active')) {
+      likeRemove(cardId, likeButton, likeCounter);
+    } else {
+      likeSet(cardId, likeButton, likeCounter);
+    }
+  }
 }
