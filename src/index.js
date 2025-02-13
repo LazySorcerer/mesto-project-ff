@@ -1,30 +1,29 @@
 import './pages/index.css';
-import { initialCards } from './components/initialCards.js';
+//import { initialCards } from './components/initialCards.js';
 import { createCard, deleteCard, likeCard } from './components/cards.js';
 import { openModal, closeModal } from './components/modal.js';
 import { enableValidation } from './components/validation.js';
-import { sendCard, updateProfile } from './components/api.js';
+import { getUser, getCards, sendCreateCard, updateProfile, updateAvatar } from './components/api.js';
 
 
 const profileEditButton = document.querySelector('.profile__edit-button');
 const profileAddButton = document.querySelector('.profile__add-button');
-
 const popupEditProfile = document.querySelector('.popup_type_edit');
 const popupNewCard = document.querySelector('.popup_type_new-card');
 const popupViewImage = document.querySelector('.popup_type_image');
 const popupImage = document.querySelector('.popup__image');
 const popupCaption = document.querySelector('.popup__caption');
 const popupAvatar = document.querySelector('.popup_type_avatar');
-
+const profileImage = document.querySelector('.profile__image');
 const profileInfoForm = document.forms['edit-profile'];
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
-
 const newPlaceForm = document.forms['new-place'];
-
 const cardsContainer = document.querySelector('.places__list');
-
 const popups = document.querySelectorAll('.popup');
+const editIconWrapper = document.querySelector('.profile__image-edit_icon-wrapper');
+const editIcon = document.querySelector('.profile__image-edit_icon');
+const avatarChangeForm = document.forms['edit-avatar'];
 
 
 popups.forEach((popup) => {
@@ -56,9 +55,6 @@ profileAddButton.addEventListener('click', function () {
 function handleProfileInfoSubmit(evt) {
   evt.preventDefault();
 
-  //profileTitle.textContent = profileInfoForm.elements.name.value;
-  //profileDescription.textContent = profileInfoForm.elements.description.value;
-
   updateProfile(profileInfoForm.elements.name.value, profileInfoForm.elements.description.value)
   .then(res => res.json())
   .then((result) => {
@@ -87,9 +83,6 @@ function addCards(cards, userId) {
     cardsContainer.append(createCard({
       userId: userId,
       card: element,
-      //cardName: element.name,
-      //cardLink: element.link,
-      //cardLikeCounter: element.likes.length,
       deleteCard: deleteCard,
       likeCard: likeCard,
       openImage: openImage
@@ -121,22 +114,35 @@ function handlenewPlaceSubmit(evt) {
 newPlaceForm.addEventListener('submit', handlenewPlaceSubmit);
 
 
+editIconWrapper.addEventListener('click', function () {
+  openModal(popupAvatar);
+});
+editIconWrapper.addEventListener('mouseover', () => {
+  profileImage.style.opacity = '0.2';
+  editIcon.style.display = 'block';
+})
+editIconWrapper.addEventListener('mouseout', () => {
+  profileImage.style.opacity = '1';
+  editIcon.style.display = 'none';
+})
+
+function handleAvatarChangeSubmit(evt) {
+  evt.preventDefault();
+
+  updateAvatar(avatarChangeForm.elements.link.value)
+    .then(res => res.json())
+    .then((result) => {
+      profileImage.style.backgroundImage = `url(${result.avatar})`;
+      closeModal(popupAvatar);
+    });
+}
+avatarChangeForm.addEventListener('submit', handleAvatarChangeSubmit);
 
 
+// очистка ошибок валидации вызовом clearValidation
 
+//clearValidation(profileForm, validationConfig);
 
-
-
-
-
-
-
-
-
-
-
-// включение валидации вызовом enableValidation
-// все настройки передаются при вызове
 
 enableValidation({
   formSelector: '.popup__form',
@@ -147,37 +153,13 @@ enableValidation({
   errorClass: 'popup__error_visible'
 });
 
-
-
-
-// очистка ошибок валидации вызовом clearValidation
-
-//clearValidation(profileForm, validationConfig);
-
-
-
-
-
-const profileImage = document.querySelector('.profile__image');
-profileImage.addEventListener('click', function () {
-  openModal(popupAvatar);
-});
-
 Promise.all([
-  fetch('https://nomoreparties.co/v1/wff-cohort-31/users/me', {
-    headers: {
-      authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1'
-    }
-  }).then(res => res.json()),
-  fetch('https://nomoreparties.co/v1/wff-cohort-31/cards', {
-    headers: {
-      authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1'
-    }
-  }).then(res => res.json())
+  getUser().then(res => res.json()),
+  getCards().then(res => res.json())
 ]).then((result) => {
-  profileTitle.textContent = result[0].name;
-  profileDescription.textContent = result[0].about;
-  profileImage.style.backgroundImage = `url(${result[0].avatar})`;
+    profileTitle.textContent = result[0].name;
+    profileDescription.textContent = result[0].about;
+    profileImage.style.backgroundImage = `url(${result[0].avatar})`;
 
-  addCards(result[1], result[0]._id);
-});
+    addCards(result[1], result[0]._id);
+  });

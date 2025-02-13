@@ -1,3 +1,19 @@
+export const getUser = function () {
+  return fetch('https://nomoreparties.co/v1/wff-cohort-31/users/me', {
+    headers: {
+      authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1'
+    }
+  })
+}
+
+export const getCards = function () {
+  return fetch('https://nomoreparties.co/v1/wff-cohort-31/cards', {
+    headers: {
+      authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1'
+    }
+  })
+}
+
 export const likeSet = function (cardId, likeButton, likeCounter) {
   fetch(`https://nomoreparties.co/v1/wff-cohort-31/cards/likes/${cardId}`, {
     method: 'PUT',
@@ -57,6 +73,19 @@ export const updateProfile = function (name, about) {
     body: JSON.stringify({
       name: name,
       about: about
+    })
+  }); 
+}
+
+export const updateAvatar = function (link) {
+  return fetch('https://nomoreparties.co/v1/wff-cohort-31/users/me/avatar', {
+    method: 'PATCH',
+    headers: {
+      authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      avatar: link
     })
   }); 
 }
