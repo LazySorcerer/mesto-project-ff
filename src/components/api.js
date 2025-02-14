@@ -1,68 +1,41 @@
+const config = {
+  baseUrl: 'https://nomoreparties.co/v1/wff-cohort-31',
+  headers: {
+    authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1',
+    'Content-Type': 'application/json',
+  },
+};
+
 export const getUser = function () {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-31/users/me', {
-    headers: {
-      authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1'
-    }
+  return fetch(`${config.baseUrl}/users/me`, {
+    headers: config.headers
   })
 }
 
 export const getCards = function () {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-31/cards', {
-    headers: {
-      authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1'
-    }
+  return fetch(`${config.baseUrl}/cards`, {
+    headers: config.headers
   })
 }
 
 export const likeSet = function (cardId, likeButton, likeCounter) {
-  fetch(`https://nomoreparties.co/v1/wff-cohort-31/cards/likes/${cardId}`, {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'PUT',
-    headers: {
-    authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1'
-    }
-  }).then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .then((result) => {
-      likeButton.classList.add('card__like-button_is-active');
-      likeCounter.textContent = result.likes.length;
-    })
-    .catch((err) => {
-      console.log(err);
-    })
+    headers: config.headers
+  })
 }
 
 export const likeRemove = function (cardId, likeButton, likeCounter) {
-  fetch(`https://nomoreparties.co/v1/wff-cohort-31/cards/likes/${cardId}`, {
+  return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
     method: 'DELETE',
-    headers: {
-    authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1'
-    }
-  }).then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
-    .then((result) => {
-      likeButton.classList.remove('card__like-button_is-active');
-      likeCounter.textContent = result.likes.length;
-    })
-    .catch((err) => {
-      console.log(err);
-    })
+    headers: config.headers
+  })
 }
 
 export const sendCreateCard = function (cardName, cardLink) {
-  return fetch(`https://nomoreparties.co/v1/wff-cohort-31/cards`, {
+  return fetch(`${config.baseUrl}/cards`, {
     method: 'POST',
-    headers: {
-    authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1',
-    'Content-Type': 'application/json'
-    },
+    headers: config.headers,
     body: JSON.stringify({
       name: cardName,
       link: cardLink
@@ -71,21 +44,16 @@ export const sendCreateCard = function (cardName, cardLink) {
 }
 
 export const sendDeleteCard = function (cardId) {
-  return fetch(`https://nomoreparties.co/v1/wff-cohort-31/cards/${cardId}`, {
+  return fetch(`${config.baseUrl}/cards/${cardId}`, {
     method: 'DELETE',
-    headers: {
-    authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1'
-    }
+    headers: config.headers
   })
 }
 
 export const updateProfile = function (name, about) {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-31/users/me', {
+  return fetch(`${config.baseUrl}/users/me`, {
     method: 'PATCH',
-    headers: {
-      authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1',
-      'Content-Type': 'application/json'
-    },
+    headers: config.headers,
     body: JSON.stringify({
       name: name,
       about: about
@@ -94,12 +62,9 @@ export const updateProfile = function (name, about) {
 }
 
 export const updateAvatar = function (link) {
-  return fetch('https://nomoreparties.co/v1/wff-cohort-31/users/me/avatar', {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
     method: 'PATCH',
-    headers: {
-      authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1',
-      'Content-Type': 'application/json'
-    },
+    headers: config.headers,
     body: JSON.stringify({
       avatar: link
     })
