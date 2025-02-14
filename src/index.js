@@ -4,6 +4,7 @@ import { createCard, deleteCard, likeCard } from './components/cards.js';
 import { openModal, closeModal } from './components/modal.js';
 import { enableValidation, clearValidation } from './components/validation.js';
 import { getUser, getCards, sendCreateCard, updateProfile, updateAvatar } from './components/api.js';
+import { checkResponse } from './components/utils.js';
 
 
 const profileEditButton = document.querySelector('.profile__edit-button');
@@ -62,21 +63,19 @@ function handleProfileInfoSubmit(evt) {
 
   popupButton.textContent = 'Сохранение...';
   updateProfile(profileInfoForm.elements.name.value, profileInfoForm.elements.description.value)
-  .then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  })
+  .then(checkResponse)
   .then((result) => {
     profileTitle.textContent = result.name;
     profileDescription.textContent = result.about;
 
     closeModal(popupEditProfile);
-    popupButton.textContent = 'Сохранить';
+    
   })
   .catch((err) => {
     console.log(err);
+  })
+  .finally(() => {
+    popupButton.textContent = 'Сохранить';
   });
 }
 profileInfoForm.addEventListener('submit', handleProfileInfoSubmit);
@@ -115,12 +114,7 @@ function handleNewPlaceSubmit(evt) {
 
   popupButton.textContent = 'Сохранение...';
   sendCreateCard(cardName, cardLink)
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+    .then(checkResponse)
     .then((result) => {
       cardsContainer.prepend(createCard({
         card: result,
@@ -131,7 +125,6 @@ function handleNewPlaceSubmit(evt) {
     
       newPlaceForm.reset();
       closeModal(popupNewCard);
-      popupButton.textContent = 'Сохранить';
       clearValidation(popupNewCard, {
         submitButtonSelector: '.popup__button',
         inactiveButtonClass: 'popup__button_disabled'
@@ -139,6 +132,9 @@ function handleNewPlaceSubmit(evt) {
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      popupButton.textContent = 'Сохранить';
     });
 }
 newPlaceForm.addEventListener('submit', handleNewPlaceSubmit);
@@ -161,20 +157,17 @@ function handleAvatarChangeSubmit(evt) {
 
   popupButton.textContent = 'Сохранение...';
   updateAvatar(avatarChangeForm.elements.link.value)
-    .then(res => {
-      if (res.ok) {
-        return res.json();
-      }
-      return Promise.reject(`Ошибка: ${res.status}`);
-    })
+    .then(checkResponse)
     .then((result) => {
       profileImage.style.backgroundImage = `url(${result.avatar})`;
       
       closeModal(popupAvatar);
-      popupButton.textContent = 'Сохранить';
     })
     .catch((err) => {
       console.log(err);
+    })
+    .finally(() => {
+      popupButton.textContent = 'Сохранить';
     });
 }
 avatarChangeForm.addEventListener('submit', handleAvatarChangeSubmit);
@@ -191,18 +184,8 @@ enableValidation({
 
 
 Promise.all([
-  getUser().then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  }),
-  getCards().then(res => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(`Ошибка: ${res.status}`);
-  })
+  getUser().then(checkResponse),
+  getCards().then(checkResponse)
 ]).then((result) => {
     profileTitle.textContent = result[0].name;
     profileDescription.textContent = result[0].about;
