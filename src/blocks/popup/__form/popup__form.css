@@ -16,6 +16,6 @@
   line-height: 1;
 }
 
-.popup__form_error_active {
+.popup__error_visible {
   display: block;
 }

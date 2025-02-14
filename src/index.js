@@ -2,7 +2,7 @@ import './pages/index.css';
 //import { initialCards } from './components/initialCards.js';
 import { createCard, deleteCard, likeCard } from './components/cards.js';
 import { openModal, closeModal } from './components/modal.js';
-import { enableValidation } from './components/validation.js';
+import { enableValidation, clearValidation } from './components/validation.js';
 import { getUser, getCards, sendCreateCard, updateProfile, updateAvatar } from './components/api.js';
 
 
@@ -24,6 +24,7 @@ const popups = document.querySelectorAll('.popup');
 const editIconWrapper = document.querySelector('.profile__image-edit_icon-wrapper');
 const editIcon = document.querySelector('.profile__image-edit_icon');
 const avatarChangeForm = document.forms['edit-avatar'];
+const popupButton = document.querySelector('.popup__button');
 
 
 popups.forEach((popup) => {
@@ -41,6 +42,10 @@ popups.forEach((popup) => {
 
 
 profileEditButton.addEventListener('click', function () {
+  clearValidation(popupEditProfile, {      
+      inputErrorSelector: '.popup__input_type_error',
+      errorSelector: '.popup__error_visible'
+    });
   openModal(popupEditProfile);
 
   profileInfoForm.elements.name.value = profileTitle.textContent;
@@ -55,12 +60,23 @@ profileAddButton.addEventListener('click', function () {
 function handleProfileInfoSubmit(evt) {
   evt.preventDefault();
 
+  popupButton.textContent = 'Сохранение...';
   updateProfile(profileInfoForm.elements.name.value, profileInfoForm.elements.description.value)
-  .then(res => res.json())
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  })
   .then((result) => {
     profileTitle.textContent = result.name;
     profileDescription.textContent = result.about;
+
     closeModal(popupEditProfile);
+    popupButton.textContent = 'Сохранить';
+  })
+  .catch((err) => {
+    console.log(err);
   });
 }
 profileInfoForm.addEventListener('submit', handleProfileInfoSubmit);
@@ -91,14 +107,20 @@ function addCards(cards, userId) {
 }
 
 
-function handlenewPlaceSubmit(evt) {
+function handleNewPlaceSubmit(evt) {
   evt.preventDefault();
 
   const cardName = newPlaceForm.elements['place-name'].value;
   const cardLink = newPlaceForm.elements.link.value;
 
+  popupButton.textContent = 'Сохранение...';
   sendCreateCard(cardName, cardLink)
-    .then(res => res.json())
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    })
     .then((result) => {
       cardsContainer.prepend(createCard({
         card: result,
@@ -109,9 +131,17 @@ function handlenewPlaceSubmit(evt) {
     
       newPlaceForm.reset();
       closeModal(popupNewCard);
+      popupButton.textContent = 'Сохранить';
+      clearValidation(popupNewCard, {
+        submitButtonSelector: '.popup__button',
+        inactiveButtonClass: 'popup__button_disabled'
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
 }
-newPlaceForm.addEventListener('submit', handlenewPlaceSubmit);
+newPlaceForm.addEventListener('submit', handleNewPlaceSubmit);
 
 
 editIconWrapper.addEventListener('click', function () {
@@ -129,19 +159,25 @@ editIconWrapper.addEventListener('mouseout', () => {
 function handleAvatarChangeSubmit(evt) {
   evt.preventDefault();
 
+  popupButton.textContent = 'Сохранение...';
   updateAvatar(avatarChangeForm.elements.link.value)
-    .then(res => res.json())
+    .then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    })
     .then((result) => {
       profileImage.style.backgroundImage = `url(${result.avatar})`;
+      
       closeModal(popupAvatar);
+      popupButton.textContent = 'Сохранить';
+    })
+    .catch((err) => {
+      console.log(err);
     });
 }
 avatarChangeForm.addEventListener('submit', handleAvatarChangeSubmit);
-
-
-// очистка ошибок валидации вызовом clearValidation
-
-//clearValidation(profileForm, validationConfig);
 
 
 enableValidation({
@@ -153,13 +189,27 @@ enableValidation({
   errorClass: 'popup__error_visible'
 });
 
+
 Promise.all([
-  getUser().then(res => res.json()),
-  getCards().then(res => res.json())
+  getUser().then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  }),
+  getCards().then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  })
 ]).then((result) => {
     profileTitle.textContent = result[0].name;
     profileDescription.textContent = result[0].about;
     profileImage.style.backgroundImage = `url(${result[0].avatar})`;
 
     addCards(result[1], result[0]._id);
+  })
+  .catch((err) => {
+    console.log(err);
   });

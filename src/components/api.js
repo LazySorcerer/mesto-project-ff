@@ -20,10 +20,18 @@ export const likeSet = function (cardId, likeButton, likeCounter) {
     headers: {
     authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1'
     }
-  }).then(res => res.json())
+  }).then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    })
     .then((result) => {
       likeButton.classList.add('card__like-button_is-active');
       likeCounter.textContent = result.likes.length;
+    })
+    .catch((err) => {
+      console.log(err);
     })
 }
 
@@ -33,10 +41,18 @@ export const likeRemove = function (cardId, likeButton, likeCounter) {
     headers: {
     authorization: '4f931946-ca14-49b5-a514-3e8b3eafd8f1'
     }
-  }).then(res => res.json())
+  }).then(res => {
+      if (res.ok) {
+        return res.json();
+      }
+      return Promise.reject(`Ошибка: ${res.status}`);
+    })
     .then((result) => {
       likeButton.classList.remove('card__like-button_is-active');
       likeCounter.textContent = result.likes.length;
+    })
+    .catch((err) => {
+      console.log(err);
     })
 }
 
@@ -74,7 +90,7 @@ export const updateProfile = function (name, about) {
       name: name,
       about: about
     })
-  }); 
+  });
 }
 
 export const updateAvatar = function (link) {

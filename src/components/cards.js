@@ -34,9 +34,17 @@ export const deleteCard = function (evt, cardId) {
   const card = eventTarget.closest('.card');
 
   sendDeleteCard(cardId)
-  .then(res => res.json())
+  .then(res => {
+    if (res.ok) {
+      return res.json();
+    }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  })
   .then((result) => {
     card.remove();
+  })
+  .catch((err) => {
+    console.log(err);
   });
 }
 
