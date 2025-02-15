@@ -1,5 +1,4 @@
 import { likeSet, likeRemove, sendDeleteCard } from "./api.js";
-import { checkResponse } from "./utils.js";
 
 export function createCard(cardProperties) {
   const cardTemplate = document.querySelector('#card-template').content;
@@ -35,7 +34,6 @@ export const deleteCard = function (evt, cardId) {
   const card = eventTarget.closest('.card');
 
   sendDeleteCard(cardId)
-  .then(checkResponse)
   .then((result) => {
     card.remove();
   })
@@ -48,7 +46,6 @@ export const likeCard = function (evt, cardId, likeButton, likeCounter) {
   if (evt.target.classList.contains('card__like-button')) {
     if (evt.target.classList.contains('card__like-button_is-active')) {
       likeRemove(cardId, likeButton, likeCounter)
-        .then(checkResponse)
         .then((result) => {
           likeButton.classList.remove('card__like-button_is-active');
           likeCounter.textContent = result.likes.length;
@@ -58,7 +55,6 @@ export const likeCard = function (evt, cardId, likeButton, likeCounter) {
         });
     } else {
       likeSet(cardId, likeButton, likeCounter)
-        .then(checkResponse)
         .then((result) => {
           likeButton.classList.add('card__like-button_is-active');
           likeCounter.textContent = result.likes.length;

@@ -1,3 +1,5 @@
+import { checkResponse } from "./utils.js";
+
 const config = {
   baseUrl: 'https://nomoreparties.co/v1/wff-cohort-31',
   headers: {
@@ -10,12 +12,14 @@ export const getUser = function () {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: config.headers
   })
+  .then(checkResponse);
 }
 
 export const getCards = function () {
   return fetch(`${config.baseUrl}/cards`, {
     headers: config.headers
   })
+  .then(checkResponse);
 }
 
 export const likeSet = function (cardId, likeButton, likeCounter) {
@@ -23,6 +27,7 @@ export const likeSet = function (cardId, likeButton, likeCounter) {
     method: 'PUT',
     headers: config.headers
   })
+  .then(checkResponse);
 }
 
 export const likeRemove = function (cardId, likeButton, likeCounter) {
@@ -30,6 +35,7 @@ export const likeRemove = function (cardId, likeButton, likeCounter) {
     method: 'DELETE',
     headers: config.headers
   })
+  .then(checkResponse);
 }
 
 export const sendCreateCard = function (cardName, cardLink) {
@@ -41,6 +47,7 @@ export const sendCreateCard = function (cardName, cardLink) {
       link: cardLink
     })
   })
+  .then(checkResponse);
 }
 
 export const sendDeleteCard = function (cardId) {
@@ -48,6 +55,7 @@ export const sendDeleteCard = function (cardId) {
     method: 'DELETE',
     headers: config.headers
   })
+  .then(checkResponse);
 }
 
 export const updateProfile = function (name, about) {
@@ -58,7 +66,8 @@ export const updateProfile = function (name, about) {
       name: name,
       about: about
     })
-  });
+  })
+  .then(checkResponse);
 }
 
 export const updateAvatar = function (link) {
@@ -68,5 +77,6 @@ export const updateAvatar = function (link) {
     body: JSON.stringify({
       avatar: link
     })
-  }); 
+  })
+  .then(checkResponse);
 }

@@ -4,7 +4,6 @@ import { createCard, deleteCard, likeCard } from './components/cards.js';
 import { openModal, closeModal } from './components/modal.js';
 import { enableValidation, clearValidation } from './components/validation.js';
 import { getUser, getCards, sendCreateCard, updateProfile, updateAvatar } from './components/api.js';
-import { checkResponse } from './components/utils.js';
 
 
 const profileEditButton = document.querySelector('.profile__edit-button');
@@ -63,7 +62,6 @@ function handleProfileInfoSubmit(evt) {
 
   popupButton.textContent = 'Сохранение...';
   updateProfile(profileInfoForm.elements.name.value, profileInfoForm.elements.description.value)
-  .then(checkResponse)
   .then((result) => {
     profileTitle.textContent = result.name;
     profileDescription.textContent = result.about;
@@ -114,7 +112,6 @@ function handleNewPlaceSubmit(evt) {
 
   popupButton.textContent = 'Сохранение...';
   sendCreateCard(cardName, cardLink)
-    .then(checkResponse)
     .then((result) => {
       cardsContainer.prepend(createCard({
         card: result,
@@ -157,7 +154,6 @@ function handleAvatarChangeSubmit(evt) {
 
   popupButton.textContent = 'Сохранение...';
   updateAvatar(avatarChangeForm.elements.link.value)
-    .then(checkResponse)
     .then((result) => {
       profileImage.style.backgroundImage = `url(${result.avatar})`;
       
@@ -184,8 +180,8 @@ enableValidation({
 
 
 Promise.all([
-  getUser().then(checkResponse),
-  getCards().then(checkResponse)
+  getUser(),
+  getCards()
 ]).then((result) => {
     profileTitle.textContent = result[0].name;
     profileDescription.textContent = result[0].about;
